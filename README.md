@@ -13,3 +13,12 @@ This repository contains a Model Context Protocol (MCP) server that allows you t
  source .venv/bin/activate
  uv sync
 ```
+
+### Dev setup
+
+Test it with the MCP Inspector
+
+```
+cd src
+mcp dev main.py
+```

@@ -158,7 +158,7 @@ cli = [
 ]
 
 [[package]]
-name = "mcp-server-for-copilot"
+name = "mcp-copilot-studio"
 version = "0.1.0"
 source = { virtual = "." }
 dependencies = [
