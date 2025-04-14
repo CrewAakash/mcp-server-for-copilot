@@ -1,7 +1,7 @@
 [project]
-name = "mcp-server-for-copilot"
+name = "mcp-copilot-studio"
 version = "0.1.0"
-description = "Add your description here"
+description = "MCP server for the agents built using Copilot studio"
 readme = "README.md"
 requires-python = ">=3.10"
 dependencies = [
