@@ -1,0 +1,36 @@
+[project]
+name = "mcp-copilot-studio"
+version = "0.1.0"
+description = "MCP server for the agents built using Copilot studio"
+readme = "README.md"
+requires-python = ">=3.10"
+dependencies = [
+    "mcp[cli]>=1.6.0",
+]
+
+[project.optional-dependencies]
+dev = [
+    "ruff>=0.2.0",
+]
+
+[tool.ruff]
+# Enable specific rules not enabled by default
+select = [
+    "E",  # pycodestyle errors
+    "F",  # pyflakes
+    "I",  # isort
+]
+
+# Same line length as Black
+line-length = 88
+
+# Allow unused variables when underscore-prefixed.
+dummy-variable-rgx = "^(_+|(_+[a-zA-Z0-9_]*[a-zA-Z0-9]+?))$"
+
+[tool.ruff.format]
+# Use double quotes for strings
+quote-style = "double"
+# Indent with 4 spaces
+indent-style = "space"
+skip-magic-trailing-comma = false
+line-ending = "auto"
