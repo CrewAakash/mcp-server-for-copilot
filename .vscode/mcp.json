@@ -2,7 +2,7 @@
     "servers": {
     "cps": {
       "type": "stdio",
-      "command": "/Users/pnagarajan/.local/bin/uv",
+      "command": "uv",
       "args": [
         "run",
         "--with",
@@ -11,7 +11,7 @@
         "python-dotenv",
         "mcp",
         "run",
-        "/Users/pnagarajan/projects/msft/mcp-server-for-copilot/src/main.py"
+        "{PROJECT_PATH}/mcp-server-for-copilot/src/main.py"
       ]
     }
   }
