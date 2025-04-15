@@ -1,0 +1,4 @@
+{
+    "name": "Python Agent",
+    "description": "An agent that can execute Python code and return the result."
+}
