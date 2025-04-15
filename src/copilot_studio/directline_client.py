@@ -1,4 +1,4 @@
-# Copyright (c) Microsoft. All rights reserved.
+"""DirectLine Client for Copilot Studio."""
 
 import logging
 from typing import Any
@@ -65,20 +65,28 @@ class DirectLineClient:
 
         async with session.post(f"{self.directline_endpoint}/conversations") as resp:
             if resp.status not in (200, 201):
-                raise Exception(f"Failed to create DirectLine conversation. Status: {resp.status}")
+                raise Exception(
+                    f"Failed to create DirectLine conversation. Status: {resp.status}"
+                )
 
             data = await resp.json()
             conversation_id = data.get("conversationId")
 
             if not conversation_id:
-                logger.error("Conversation creation response missing conversationId: %s", data)
-                raise Exception("No conversation ID received from conversation creation.")
+                logger.error(
+                    "Conversation creation response missing conversationId: %s", data
+                )
+                raise Exception(
+                    "No conversation ID received from conversation creation."
+                )
 
             logger.debug(f"Created conversation {conversation_id}")
 
             return conversation_id
 
-    async def post_activity(self, conversation_id: str, payload: dict[str, Any]) -> dict[str, Any]:
+    async def post_activity(
+        self, conversation_id: str, payload: dict[str, Any]
+    ) -> dict[str, Any]:
         """
         Post an activity to a DirectLine conversation.
 
@@ -93,7 +101,9 @@ class DirectLineClient:
             Exception: If posting the activity fails.
         """
         session = await self.get_session()
-        activities_url = f"{self.directline_endpoint}/conversations/{conversation_id}/activities"
+        activities_url = (
+            f"{self.directline_endpoint}/conversations/{conversation_id}/activities"
+        )
 
         logger.debug(f"Posting activity to {activities_url}")
         async with session.post(activities_url, json=payload) as resp:
@@ -103,7 +113,9 @@ class DirectLineClient:
 
             return await resp.json()
 
-    async def get_activities(self, conversation_id: str, watermark: str | None = None) -> dict[str, Any]:
+    async def get_activities(
+        self, conversation_id: str, watermark: str | None = None
+    ) -> dict[str, Any]:
         """
         Get activities from a DirectLine conversation.
         Use watermark to retrieve new activities since the last retrieved activity.
@@ -119,7 +131,9 @@ class DirectLineClient:
             Exception: If retrieving activities fails.
         """
         session = await self.get_session()
-        activities_url = f"{self.directline_endpoint}/conversations/{conversation_id}/activities"
+        activities_url = (
+            f"{self.directline_endpoint}/conversations/{conversation_id}/activities"
+        )
 
         if watermark:
             activities_url = f"{activities_url}?watermark={watermark}"
@@ -131,7 +145,9 @@ class DirectLineClient:
 
             return await resp.json()
 
-    async def end_conversation(self, conversation_id: str, user_id: str = "user1") -> dict[str, Any]:
+    async def end_conversation(
+        self, conversation_id: str, user_id: str = "user1"
+    ) -> dict[str, Any]:
         """
         End a DirectLine conversation by sending an endOfConversation activity.
 
@@ -148,7 +164,9 @@ class DirectLineClient:
         payload = {"type": "endOfConversation", "from": {"id": user_id}}
 
         session = await self.get_session()
-        activities_url = f"{self.directline_endpoint}/conversations/{conversation_id}/activities"
+        activities_url = (
+            f"{self.directline_endpoint}/conversations/{conversation_id}/activities"
+        )
 
         async with session.post(activities_url, json=payload) as resp:
             if resp.status != 200:
