@@ -1,7 +1,6 @@
 """Copilot Studio Agent MCP Server"""
 
 import logging
-import os
 import sys
 from typing import Optional
 
@@ -9,11 +8,8 @@ from dotenv import load_dotenv
 from mcp.server.fastmcp import Context, FastMCP
 from pydantic import Field
 
-from copilot_studio.copilot_agent import CopilotAgent
-from copilot_studio.directline_client import DirectLineClient
-import json
-from cps_connector import initialize_server as cps_initialize_server
-from cps_connector import query_copilot_agent as cps_query_copilot_agent
+from cps_connector import CopilotConnector
+from mcp_server_types import ToolSuccessResponse, ToolErrorResponse, ToolResponse
 
 logging.basicConfig(
     level=logging.WARNING,
@@ -22,18 +18,14 @@ logging.basicConfig(
 )
 logger = logging.getLogger("mcp_cps_server")
 
-# Global variables for DirectLine Client and Copilot Agent
-directline_client = None
-copilot_agent = None
-
-
-def initialize_server():
-    """Initialize the Copilot Studio Agent."""
-    global directline_client, copilot_agent
-
+def initialize_server() -> bool:
+    """Initialize the Copilot Studio Agent.
+    
+    Returns:
+        bool: True if initialization was successful, False otherwise
+    """
     try:
-        status, directline_client, copilot_agent = cps_initialize_server()
-        return status
+        return CopilotConnector.initialize()
     except Exception as e:
         logger.error(f"Failed to initialize Copilot Studio client: {str(e)}")
         return False
@@ -51,7 +43,7 @@ mcp = FastMCP(
 
 @mcp.tool()
 async def query_agent(
-    query: str = Field(description="The message to send to the Copilot Studio agent"),
+    query: str = Field(description="Query to the tool"),
     conversation_id: Optional[str] = Field(
         description="The conversation ID returned from previous response for continuing the conversation",
         default=None,
@@ -60,38 +52,41 @@ async def query_agent(
         description="The watermark returned from previous response for tracking conversation state. Watermark is used to query new messages in the conversation.",
         default=None,
     ),
-    ctx: Context = None,
-) -> dict:
+) -> ToolResponse:
     """
-    Send a query to the Copilot Studio agent.
+    Send a query to the agent.
     Always use conversation_id and watermark from previous responses when available.
+    
+    Returns:
+        ToolResponse: Response containing success/error status, message, 
+        conversation_id, and watermark for continued conversation.
     """
     if not server_initialized:
-        return {
-            "status": "error",
-            "message": "Error: Copilot Studio agent is not initialized. Check server logs for details.",
-            "conversation_id": None,
-            "watermark": None,
-        }
+        return ToolErrorResponse(
+            status="error",
+            message="Error: Copilot Studio agent is not initialized. Check server logs for details.",
+            conversation_id=None,
+            watermark=None,
+        )
 
     try:
         # Query the agent and pass conversation context parameters
-        response = await cps_query_copilot_agent(query, conversation_id, watermark)
+        response = await CopilotConnector.query_agent(query, conversation_id, watermark)
 
         # Return formatted response with conversation tracking info
-        return {
-            "status": "success",
-            "message": response["message"],
-            "conversation_id": response["conversation_id"],
-            "watermark": response["watermark"],
-        }
+        return ToolSuccessResponse(
+            status="success",
+            message=response["message"],
+            conversation_id=response["conversation_id"],
+            watermark=response["watermark"],
+        )
     except Exception as e:
-        return {
-            "status": "error",
-            "message": f"Error querying Copilot Studio agent: {str(e)}",
-            "conversation_id": None,
-            "watermark": None,
-        }
+        return ToolErrorResponse(
+            status="error",
+            message=f"Error querying Copilot Studio agent: {str(e)}",
+            conversation_id=None,
+            watermark=None,
+        )
 
 
 if __name__ == "__main__":
@@ -101,4 +96,4 @@ if __name__ == "__main__":
     print(
         f"\n{'=' * 50}\nCopilot Studio Agents MCP Server {status}\nStarting server...\n{'=' * 50}\n"
     )
-    mcp.run(transport="sse", port=3000)
+    mcp.run()
