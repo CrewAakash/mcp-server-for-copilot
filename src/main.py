@@ -1,6 +1,8 @@
 """Copilot Studio Agent MCP Server"""
 
+import json
 import logging
+import os
 import sys
 from typing import Optional
 
@@ -9,7 +11,7 @@ from mcp.server.fastmcp import Context, FastMCP
 from pydantic import Field
 
 from cps_connector import CopilotConnector
-from mcp_server_types import ToolSuccessResponse, ToolErrorResponse, ToolResponse
+from mcp_server_types import ToolSuccessResponse, ToolErrorResponse, ToolResponse, AgentDefinition
 
 logging.basicConfig(
     level=logging.WARNING,
@@ -17,6 +19,31 @@ logging.basicConfig(
     stream=sys.stderr,
 )
 logger = logging.getLogger("mcp_cps_server")
+
+def load_agent_definition() -> AgentDefinition:
+    """Load agent definition from JSON file.
+    
+    Returns:
+        AgentDefinition: Object containing agent name and description
+    """
+    default_definition = AgentDefinition(
+        name="Copilot Agent",
+        description="An agent that runs in the Microsoft copilot studio."
+    )
+    
+    try:
+        # Look for agent_definition.json in the root directory
+        agent_def_path = os.path.join(os.path.dirname(os.path.dirname(__file__)), "agent_definition.json")
+        if os.path.exists(agent_def_path):
+            with open(agent_def_path, 'r') as f:
+                data = json.load(f)
+                return AgentDefinition(name=data["name"], description=data["description"])
+        else:
+            logger.warning("agent_definition.json not found, using default definition")
+            return default_definition
+    except Exception as e:
+        logger.error(f"Failed to load agent definition: {str(e)}")
+        return default_definition
 
 def initialize_server() -> bool:
     """Initialize the Copilot Studio Agent.
@@ -34,16 +61,18 @@ def initialize_server() -> bool:
 load_dotenv()
 
 server_initialized = initialize_server()
+agent = load_agent_definition()
 
+# Use agent name and description for the MCP server
 mcp = FastMCP(
-    "copilot-studio", 
-    description="MCP server for Copilot Studio agent integration via DirectLine API",
+    agent.name.lower().replace(" ", "-"), 
+    description=agent.description,
     dependencies=["python-dotenv", "aiohttp", "typing-extensions"],
 )
 
 @mcp.tool()
 async def query_agent(
-    query: str = Field(description="Query to the tool"),
+    query: str = Field(description=f"Query to send to the {agent.name}"),
     conversation_id: Optional[str] = Field(
         description="The conversation ID returned from previous response for continuing the conversation",
         default=None,
@@ -53,8 +82,9 @@ async def query_agent(
         default=None,
     ),
 ) -> ToolResponse:
-    """
-    Send a query to the agent.
+    f"""
+    Send a query to the {agent.name}.
+    {agent.description}
     Always use conversation_id and watermark from previous responses when available.
     
     Returns:

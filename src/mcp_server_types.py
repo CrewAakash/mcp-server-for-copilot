@@ -1,6 +1,14 @@
 """Type definitions for MCP server."""
 
 from typing import Optional, TypedDict, Literal, Union
+from dataclasses import dataclass
+
+# Agent definition type
+@dataclass
+class AgentDefinition:
+    """Type definition for agent configuration."""
+    name: str
+    description: str
 
 # Response type definitions for the CopilotConnector
 class AgentResponse(TypedDict):

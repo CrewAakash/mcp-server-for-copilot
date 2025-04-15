@@ -1,4 +1,4 @@
 {
-    "name": "Python Agent",
-    "description": "An agent that can execute Python code and return the result."
+    "name": "Financial product agent",
+    "description": "An agent that can recommend financial products based on user needs."
 }
