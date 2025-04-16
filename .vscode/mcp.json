@@ -1,0 +1,18 @@
+{
+    "servers": {
+    "cps": {
+      "type": "stdio",
+      "command": "uv",
+      "args": [
+        "run",
+        "--with",
+        "mcp[cli]",
+        "--with",
+        "python-dotenv",
+        "mcp",
+        "run",
+        "{PROJECT_PATH}/mcp-server-for-copilot/src/main.py"
+      ]
+    }
+  }
+}
