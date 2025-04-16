@@ -1,6 +1,7 @@
 """CopilotAgent class for Microsoft Copilot Studio integration."""
 
 import asyncio
+import json
 import logging
 from typing import Any, Dict, Optional
 
@@ -145,19 +146,14 @@ class CopilotAgent:
             response_data: The raw response data from DirectLine
 
         Returns:
-            A structured response with text, adaptive cards, and suggested actions
+            A structured response with message and watermark
         """
         if not response_data or "activities" not in response_data.get("data", {}):
             raise Exception("Invalid response from DirectLine Bot")
 
         activities = response_data["data"]["activities"]
 
-        result = {
-            "text": "",
-            "adaptive_card": None,
-            "suggested_actions": [],
-            "watermark": response_data["watermark"],
-        }
+        message = None
 
         for activity in activities:
             # Skip non-bot messages or non-message types
@@ -168,15 +164,6 @@ class CopilotAgent:
             ):
                 continue
 
-            # Extract text content
-            if "text" in activity:
-                result["text"] = activity.get("text", "")
-
-            # Extract suggested actions
-            suggested_actions = activity.get("suggestedActions", {}).get("actions", [])
-            if suggested_actions:
-                result["suggested_actions"] = suggested_actions
-
             # Extract adaptive card if present
             attachments = activity.get("attachments", [])
             if (
@@ -184,7 +171,22 @@ class CopilotAgent:
                 and attachments[0].get("contentType")
                 == "application/vnd.microsoft.card.adaptive"
             ):
-                result["adaptive_card"] = attachments[0].get("content", {})
+                message = json.dumps(attachments[0].get("content", {}))
+
+            # Extract suggested actions
+            suggested_actions = activity.get("suggestedActions", {}).get("actions", [])
+            if suggested_actions:
+                message = json.dumps(suggested_actions)
+
+            # Extract text content
+            text = activity.get("text", "")
+            if text:
+                message = text
+
+        result = {
+            "message": message,
+            "watermark": response_data["watermark"],
+        }
 
         return result
 
