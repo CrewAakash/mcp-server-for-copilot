@@ -65,6 +65,10 @@ class DirectLineClient:
 
         async with session.post(f"{self.directline_endpoint}/conversations") as resp:
             if resp.status not in (200, 201):
+                logger.error(
+                    "Failed to create DirectLine conversation. Response: %s",
+                    await resp.text(),
+                )
                 raise Exception(
                     f"Failed to create DirectLine conversation. Status: {resp.status}"
                 )

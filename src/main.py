@@ -7,11 +7,16 @@ import sys
 from typing import Optional
 
 from dotenv import load_dotenv
-from mcp.server.fastmcp import Context, FastMCP
+from mcp.server.fastmcp import FastMCP
 from pydantic import Field
 
 from cps_connector import CopilotConnector
-from mcp_server_types import ToolSuccessResponse, ToolErrorResponse, ToolResponse, AgentDefinition
+from mcp_server_types import (
+    AgentDefinition,
+    ToolErrorResponse,
+    ToolResponse,
+    ToolSuccessResponse,
+)
 
 logging.basicConfig(
     level=logging.WARNING,
@@ -20,24 +25,29 @@ logging.basicConfig(
 )
 logger = logging.getLogger("mcp_cps_server")
 
+
 def load_agent_definition() -> AgentDefinition:
     """Load agent definition from JSON file.
-    
+
     Returns:
         AgentDefinition: Object containing agent name and description
     """
     default_definition = AgentDefinition(
         name="Copilot Agent",
-        description="An agent that runs in the Microsoft copilot studio."
+        description="An agent that runs in the Microsoft copilot studio.",
     )
-    
+
     try:
         # Look for agent_definition.json in the root directory
-        agent_def_path = os.path.join(os.path.dirname(os.path.dirname(__file__)), "agent_definition.json")
+        agent_def_path = os.path.join(
+            os.path.dirname(os.path.dirname(__file__)), "agent_definition.json"
+        )
         if os.path.exists(agent_def_path):
-            with open(agent_def_path, 'r') as f:
+            with open(agent_def_path, "r") as f:
                 data = json.load(f)
-                return AgentDefinition(name=data["name"], description=data["description"])
+                return AgentDefinition(
+                    name=data["name"], description=data["description"]
+                )
         else:
             logger.warning("agent_definition.json not found, using default definition")
             return default_definition
@@ -45,9 +55,10 @@ def load_agent_definition() -> AgentDefinition:
         logger.error(f"Failed to load agent definition: {str(e)}")
         return default_definition
 
+
 def initialize_server() -> bool:
     """Initialize the Copilot Studio Agent.
-    
+
     Returns:
         bool: True if initialization was successful, False otherwise
     """
@@ -57,6 +68,7 @@ def initialize_server() -> bool:
         logger.error(f"Failed to initialize Copilot Studio client: {str(e)}")
         return False
 
+
 # Initialize MCP and server
 load_dotenv()
 
@@ -65,10 +77,11 @@ agent = load_agent_definition()
 
 # Use agent name and description for the MCP server
 mcp = FastMCP(
-    agent.name.lower().replace(" ", "-"), 
+    agent.name.lower().replace(" ", "-"),
     description=agent.description,
     dependencies=["python-dotenv", "aiohttp", "typing-extensions"],
 )
+
 
 @mcp.tool()
 async def query_agent(
