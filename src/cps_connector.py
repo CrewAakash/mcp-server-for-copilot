@@ -50,9 +50,6 @@ class CopilotConnector:
 
             # Create a Copilot agent instance
             cls.copilot_agent = CopilotAgent(
-                id="copilot-studio-agent",
-                name="copilot-studio-agent",
-                description="Copilot Studio agent via DirectLine API",
                 directline_client=cls.directline_client,
             )
             
@@ -117,30 +114,3 @@ class CopilotConnector:
         except Exception as e:
             logger.error(f"Copilot agent query failed: {str(e)}")
             raise
-
-# For backward compatibility, maintain the global functions but implement via the class
-directline_client = CopilotConnector.directline_client
-copilot_agent = CopilotConnector.copilot_agent
-
-def initialize_server() -> bool:
-    """Initialize the Copilot Studio Agent (now delegates to CopilotConnector).
-    
-    Returns:
-        bool: True if initialization was successful, False otherwise
-    """
-    return CopilotConnector.initialize()
-
-async def query_copilot_agent(
-    query: str, conversation_id: Optional[str] = None, watermark: Optional[str] = None
-) -> AgentResponse:
-    """Query the Copilot Studio agent (now delegates to CopilotConnector).
-
-    Args:
-        query: The message to send to the agent
-        conversation_id: Optional ID to continue an existing conversation
-        watermark: Optional watermark to track conversation state
-
-    Returns:
-        AgentResponse containing the response text, conversation_id, and watermark
-    """
-    return await CopilotConnector.query_agent(query, conversation_id, watermark)

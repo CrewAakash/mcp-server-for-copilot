@@ -18,23 +18,14 @@ class CopilotAgent:
 
     def __init__(
         self,
-        id: str,
-        name: str,
-        description: str,
         directline_client: DirectLineClient,
     ) -> None:
         """
         Initialize the CopilotAgent.
 
         Args:
-            id: A unique identifier for the agent
-            name: A display name for the agent
-            description: A description of the agent
             directline_client: The DirectLine client for API communication
         """
-        self.id = id
-        self.name = name
-        self.description = description
         self.directline_client = directline_client
 
     async def start_conversation(self) -> str:
