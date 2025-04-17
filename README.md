@@ -134,6 +134,35 @@ Alternatively you can install the server to Claude Desktop by running the follow
 mcp install src/main.py -f .env
 ```
 
+#### Run via `docker`
+You can run the MCP server as a container using Docker. Ensure you have Docker installed and running on your machine.
+
+Build the Docker image:
+
+```bash
+docker build -t mcp-server-copilot-agent .
+```
+
+Add the following to your Claude Desktop configuration file:
+
+```json
+{
+  "mcpServers": {
+    "agent-name": {
+      "command": "docker",
+      "args": [
+        "run",
+        "-i",
+        "--rm",
+        "-p", "8000:8000",
+        "--env-file", "<PATH_TO_THE_PARENT_FOLDER>/.env",
+        "mcp-server-copilot-agent"
+      ]
+    }
+  }
+}
+```
+
 ### 🌐 Usage with Other MCP Clients
 
 This server follows the MCP protocol specification and can be used with any MCP-compatible client. Refer to your client's documentation for specific instructions on how to connect to external MCP servers.
