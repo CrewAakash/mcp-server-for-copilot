@@ -1,4 +1,4 @@
 {
-    "name": "Financial product agent",
-    "description": "An agent that can recommend financial products based on user needs."
+    "name": "Tagline generator",
+    "description": "An agent that can generate taglines for the given businesses or products."
 }
