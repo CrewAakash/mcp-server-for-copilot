@@ -79,11 +79,11 @@ agent = load_agent_definition()
 mcp = FastMCP(
     agent.name.lower().replace(" ", "-"),
     description=agent.description,
-    dependencies=["python-dotenv", "aiohttp", "typing-extensions"],
+    dependencies=["python-dotenv", "aiohttp"],
 )
 
 
-@mcp.tool()
+@mcp.tool(description=f"use to query the agent: {agent.name}")
 async def query_agent(
     query: str = Field(description=f"Query to send to the {agent.name}"),
     conversation_id: Optional[str] = Field(

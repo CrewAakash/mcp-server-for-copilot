@@ -354,6 +354,7 @@ source = { virtual = "." }
 dependencies = [
     { name = "aiohttp" },
     { name = "mcp", extra = ["cli"] },
+    { name = "python-dotenv" },
 ]
 
 [package.optional-dependencies]
@@ -365,6 +366,7 @@ dev = [
 requires-dist = [
     { name = "aiohttp", specifier = ">=3.9.0" },
     { name = "mcp", extras = ["cli"], specifier = ">=1.6.0" },
+    { name = "python-dotenv", specifier = ">=1.1.0" },
     { name = "ruff", marker = "extra == 'dev'", specifier = ">=0.2.0" },
 ]
 provides-extras = ["dev"]
