@@ -2,8 +2,7 @@
 
 An [MCP (Model Context Protocol)](https://modelcontextprotocol.io/introduction) server implementation that connects to Microsoft Copilot Studio agents, allowing seamless integration of Copilot Studio agents with any MCP-compatible client.
 
-https://github.com/user-attachments/assets/55380812-59b3-4e6f-aebd-411c8d2efe4a
-
+https://github.com/user-attachments/assets/19fdd17b-2837-4797-8653-fe9439de355f
 
 ## ✨ Features
 
