@@ -71,15 +71,37 @@ pip install -e .
 
 #### Testing with MCP Inspector
 
-Post activation, you can test the server using the MCP Inspector. 
+Once you activate your environment, you can run the MCP server locally using [`MCP Inspector`](https://modelcontextprotocol.io/docs/tools/inspector#python).
 
-```bash
-mcp run src/main.py -f .env
-```
+1. Run the MCP server using the following command:
+
+  ```bash
+  mcp dev src/main.py
+  ```
+
+2. You will be prompted to install the `@modelcontextprotocol/inspector` package. Choose `y` to install it.  
+  ![Install MCP Inspector](./images/run_mcp_server_locally.png)
+
+3. Launch the MCP Inspector and connect to the MCP server.
+4. Navigate to `Tools` and click `List Tools` to view all the available tools in the MCP server.
+5. Select the `query_agent` tool to send queries to your Copilot Studio agent.  
+  ![MCP Inspector](./images/mcp_inspector.png)
+  ![Result](./images/mcp_inspector_result.png)
+
 
 ### Usage with Claude Desktop
 
 To use with Claude Desktop, add the following to your configuration file:
+
+1. Download [Claude Desktop](https://claude.ai/download) and install it, if you haven't already.
+2. Navigate to `File` > `Settings` > `Developer` > `Edit Config`.
+3. Open the `claude_desktop_config.json` file and add the following configurations to the `mcpServers` section. You can use either `uv`, `python`, or `docker` to run the server.  
+  ![Claude Desktop Config](./images/claude_desktop_config.png)
+4. Save the configuration file and restart Claude Desktop.
+5. Once the MCP server is added to Claude Desktop, you can view it under the tools section.
+  ![Claude Desktop Tools](./images/claude_desktop_mcp_server.png)
+
+### MCP Server Configurations for Claude Desktop
 
 #### Run via `uv`
 
@@ -161,6 +183,8 @@ Add the following to your Claude Desktop configuration file:
   }
 }
 ```
+
+Once you have configured Claude Desktop with the 
 
 ### 🌐 Usage with Other MCP Clients
 
